@@ -8,6 +8,13 @@ import {
   Dimensions,
   SafeAreaView,
 } from "react-native";
+import { debounce, throttle } from "lodash";
+
+const delayedHandleChange = debounce((eventData) => alert(eventData), 1000);
+const handleChange = (e) => {
+  let eventData = "Teste debounce.";
+  delayedHandleChange(eventData);
+};
 
 export default class App extends React.Component {
   render() {
@@ -28,6 +35,7 @@ export default class App extends React.Component {
               placeholder="Digite o CEP aqui"
               keyboardAppearance="dark"
               keyboardType="number-pad"
+              onChange={handleChange}
               returnKeyType={"done"}
             />
           </SafeAreaView>
