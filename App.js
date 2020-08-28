@@ -17,6 +17,7 @@ export default function App() {
   const handleChange = (e) => {
     let eventData = "Teste debounce.";
     delayedHandleChange(eventData);
+    sheetRef.current.snapTo(100);
   };
 
   const sheetRef = useRef(null);
@@ -25,11 +26,19 @@ export default function App() {
     <View
       style={{
         backgroundColor: "white",
-        padding: 16,
-        height: 450,
+        padding: 20,
+        height: 350,
       }}
     >
-      <Text>Swipe down to close</Text>
+      <Text style={styles.nameInfo}>
+        Rua: <Text style={styles.descInfo}>Belizário de Castro, 135</Text>
+      </Text>
+      <Text style={styles.nameInfo}>
+        Cidade: <Text style={styles.descInfo}>Juiz de Fora</Text>
+      </Text>
+      <Text style={styles.nameInfo}>
+        Estado: <Text style={styles.descInfo}>MG</Text>
+      </Text>
     </View>
   );
 
@@ -60,7 +69,7 @@ export default function App() {
       </MapView>
       <BottomSheet
         ref={sheetRef}
-        snapPoints={[450, 300, 0]}
+        snapPoints={[400, 350, 0]}
         borderRadius={25}
         renderContent={renderContent}
         style={{ borderColor: "#EEE", borderWidth: 4 }}
@@ -91,5 +100,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     fontSize: 14,
     marginHorizontal: 25,
+  },
+  nameInfo: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginVertical: 7,
+  },
+  descInfo: {
+    fontSize: 16,
+    fontWeight: "normal",
   },
 });
