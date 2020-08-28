@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 import MapView, { Marker } from "react-native-maps";
 import {
   StyleSheet,
@@ -9,43 +9,64 @@ import {
   SafeAreaView,
 } from "react-native";
 import { debounce, throttle } from "lodash";
+import BottomSheet from "reanimated-bottom-sheet";
 
-const delayedHandleChange = debounce((eventData) => alert(eventData), 1000);
-const handleChange = (e) => {
-  let eventData = "Teste debounce.";
-  delayedHandleChange(eventData);
-};
+export default function App() {
+  const delayedHandleChange = debounce((eventData) => alert(eventData), 1000);
 
-export default class App extends React.Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <MapView
-          style={styles.mapStyle}
-          initialRegion={{
-            latitude: -21.7808787,
-            longitude: -43.3589147,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-        >
-          <SafeAreaView style={styles.safeArea}>
-            <TextInput
-              style={styles.input}
-              placeholder="Digite o CEP aqui"
-              keyboardAppearance="dark"
-              keyboardType="number-pad"
-              onChange={handleChange}
-              returnKeyType={"done"}
-            />
-          </SafeAreaView>
-          <Marker
-            coordinate={{ latitude: -21.7808787, longitude: -43.3589147 }}
+  const handleChange = (e) => {
+    let eventData = "Teste debounce.";
+    delayedHandleChange(eventData);
+  };
+
+  const sheetRef = useRef(null);
+
+  const renderContent = () => (
+    <View
+      style={{
+        backgroundColor: "white",
+        padding: 16,
+        height: 450,
+      }}
+    >
+      <Text>Swipe down to close</Text>
+    </View>
+  );
+
+  return (
+    <View style={styles.container}>
+      <MapView
+        style={styles.mapStyle}
+        initialRegion={{
+          latitude: -21.7808787,
+          longitude: -43.3589147,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+      >
+        <SafeAreaView style={styles.safeArea}>
+          <TextInput
+            style={styles.input}
+            placeholder="Digite o CEP aqui"
+            keyboardAppearance="dark"
+            keyboardType="number-pad"
+            onChange={handleChange}
+            returnKeyType={"done"}
           />
-        </MapView>
-      </View>
-    );
-  }
+        </SafeAreaView>
+        <Marker
+          coordinate={{ latitude: -21.7808787, longitude: -43.3589147 }}
+        />
+      </MapView>
+      <BottomSheet
+        ref={sheetRef}
+        snapPoints={[450, 300, 0]}
+        borderRadius={25}
+        renderContent={renderContent}
+        style={{ borderColor: "#EEE", borderWidth: 4 }}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
