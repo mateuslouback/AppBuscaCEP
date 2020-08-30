@@ -32,4 +32,13 @@ module.exports = StyleSheet.create({
     fontSize: 16,
     fontWeight: "normal",
   },
+  load: {
+    position: "absolute",
+    height: "100%",
+    width: "100%",
+    backgroundColor: "rgba(0,0,0,0.7)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1000,
+  },
 });

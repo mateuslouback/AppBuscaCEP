@@ -1,5 +1,12 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
-import { Text, TextInput, View, SafeAreaView, Alert } from "react-native";
+import React, { useState, useRef } from "react";
+import {
+  Text,
+  TextInput,
+  View,
+  SafeAreaView,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { debounce } from "lodash";
 import BottomSheet from "reanimated-bottom-sheet";
@@ -8,20 +15,22 @@ import styles from "./style.js";
 
 export default function App() {
   const sheetRef = useRef(null);
-  const [inputValue, setInputValue] = useState("01001000");
+  const [hiddenLoad, setHiddenLoad] = useState(true);
+  const [text, setText] = useState("");
   const [cep, setCep] = useState({
     latitude: -21.7808787,
     longitude: -43.3589147,
     logradouro: "Rua Ataliba de Barros",
     cidade: { nome: "Juiz de Fora" },
     estado: { sigla: "MG" },
+    bairro: "São Mateus",
   });
 
-  const loadCep = async () => {
+  const loadCep = async (text) => {
     const response = await api
-      .get(`cep?cep=${inputValue}`, {
+      .get(`cep?cep=${text}`, {
         headers: {
-          Authorization: "Token token=55c30f4704c0da040807faaec4804e3a",
+          Authorization: "Token token=yourtoken",
         },
       })
       .catch((error) => {
@@ -34,17 +43,13 @@ export default function App() {
           }
         );
 
-        console.log(error);
-
-        return;
+        return [];
       });
-
-    console.log(response);
 
     if (Object.entries(response.data).length === 0) {
       Alert.alert(
         "Erro ao carregar CEP",
-        "Tente novamente mais tarde.",
+        "Este CEP não existe.",
         [{ text: "OK" }],
         {
           cancelable: false,
@@ -54,8 +59,27 @@ export default function App() {
       const dadosCep = response.data;
       setCep(dadosCep);
       sheetRef.current.snapTo(100);
+      setHiddenLoad(true);
     }
   };
+
+  const handleCep = debounce((text) => {
+    setHiddenLoad(false);
+    setText(text);
+    if (text.length < 8) {
+      Alert.alert(
+        "CEP inválido.",
+        "Os CEPs devem conter 8 números.",
+        [{ text: "OK" }],
+        {
+          cancelable: false,
+        }
+      );
+      setHiddenLoad(true);
+    } else {
+      loadCep(text);
+    }
+  }, 1500);
 
   const renderContent = () => (
     <View
@@ -79,6 +103,9 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      {hiddenLoad === false ? (
+        <ActivityIndicator style={styles.load} size="large" color="#FFF" />
+      ) : null}
       <MapView
         style={styles.mapStyle}
         region={{
@@ -94,8 +121,9 @@ export default function App() {
             placeholder="Digite o CEP aqui"
             keyboardAppearance="dark"
             keyboardType="number-pad"
-            onChangeText={() => {}}
+            onChangeText={(text) => handleCep(text)}
             returnKeyType={"done"}
+            maxLength={8}
           />
         </SafeAreaView>
         <Marker
@@ -105,7 +133,6 @@ export default function App() {
           }}
           title={`Bairro ${cep.bairro}`}
           image={require("../../../assets/pin.png")}
-          width={75}
         />
       </MapView>
       <BottomSheet
