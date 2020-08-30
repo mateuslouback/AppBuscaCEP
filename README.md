@@ -53,7 +53,7 @@ To get a local copy up and running follow these simple steps.
 
 ### Installation
 
-1. Create account in [CEP Aberto](https://www.cepaberto.com) to obtain the access Token.
+1. Create account in [CEP Aberto](https://www.cepaberto.com) to obtain the access Token API.
 
 2. Instal [Expo CLI](https://expo.io/learn)
 ```sh
